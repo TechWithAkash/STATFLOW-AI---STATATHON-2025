@@ -23,9 +23,13 @@ DB_PATH = os.path.join(BASE_DIR, "statflow.db")
 os.makedirs(STORAGE_DIR, exist_ok=True)
 
 app = FastAPI(title="StatFlow AI Prototype", version="0.1")
+
+# Configure CORS for production via env, default to permissive for dev
+origins_env = os.getenv("ALLOW_ORIGINS")  # comma-separated
+allow_origins = [o.strip() for o in origins_env.split(",")] if origins_env else ["*"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allow_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
