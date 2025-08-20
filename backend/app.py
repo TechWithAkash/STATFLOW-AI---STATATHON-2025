@@ -25,11 +25,14 @@ os.makedirs(STORAGE_DIR, exist_ok=True)
 app = FastAPI(title="StatFlow AI Prototype", version="0.1")
 
 # Configure CORS for production via env, default to permissive for dev
+# Comma-separated exact origins or a regex via ALLOW_ORIGIN_REGEX
 origins_env = os.getenv("ALLOW_ORIGINS")  # comma-separated
-allow_origins = [o.strip() for o in origins_env.split(",")] if origins_env else ["*"]
+origin_regex = os.getenv("ALLOW_ORIGIN_REGEX")  # optional regex
+allow_origins = [o.strip() for o in origins_env.split(",")] if origins_env else (["*"] if not origin_regex else [])
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allow_origins,
+    allow_origin_regex=origin_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
