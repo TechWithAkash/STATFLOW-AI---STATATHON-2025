@@ -160,6 +160,22 @@ export default function App() {
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 py-8">
+        {/* Top navigation with Back button */}
+        <div className="flex items-center justify-between mb-6">
+          <button
+            onClick={() => window.history.back()}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur border border-gray-200 rounded-xl text-gray-700 font-semibold hover:bg-violet-50 hover:border-violet-300 hover:scale-[1.02] transition-all shadow-sm"
+            aria-label="Go back"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m12 19-7-7 7-7"/>
+              <path d="M19 12H5"/>
+            </svg>
+            Back
+          </button>
+          <div className="text-xs text-gray-500">StatFlow AI</div>
+        </div>
+
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-3 mb-3">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-violet-500 to-rose-500 flex items-center justify-center text-white text-xl shadow-lg">📊</div>
@@ -186,6 +202,10 @@ export default function App() {
         .animate-float { animation: float 10s ease-in-out infinite; }
   @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   .animate-spin-slow { animation: spin-slow 6s linear infinite; }
+  @keyframes pulse-glow { 0%,100%{box-shadow:0 0 16px rgba(139,92,246,0.25)} 50%{box-shadow:0 0 28px rgba(139,92,246,0.45)} }
+  .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+  @keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+  .animate-shimmer { animation: shimmer 2s infinite; }
       `}</style>
     </div>
   )
@@ -218,6 +238,7 @@ function UploadBox({ onUpload, error }: { onUpload: (file: File) => void, error:
         </div>
   <input ref={inputRef} type="file" accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f) }} />
       </div>
+  <div className="mt-3 text-center text-xs text-gray-500">Supported: .csv, .xlsx, .xls • Max size 5MB</div>
       {error && (
         <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-700 text-sm">{error}</div>
       )}
@@ -269,8 +290,11 @@ function ProcessingSection({ progress, uiStepIndex, error }: { progress: Progres
           <div className="flex items-center gap-3"><Clock size={20} className="text-violet-500" /><span className="font-semibold">Progress</span></div>
           <span className="text-sm font-bold text-gray-700 bg-violet-100 px-2.5 py-0.5 rounded-full">{Math.round(percent)}%</span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+        <div className="relative w-full bg-gray-200 rounded-full h-3 overflow-hidden">
           <div className="h-full bg-gradient-to-r from-violet-500 via-purple-500 to-rose-500 rounded-full transition-all" style={{ width: `${percent}%` }} />
+          <div className="pointer-events-none absolute inset-0 opacity-50">
+            <div className="w-1/3 h-full bg-white/40 blur-sm animate-shimmer" />
+          </div>
         </div>
         <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
           <div className="rounded-xl p-3 border bg-blue-50 border-blue-200">
@@ -348,7 +372,10 @@ function ResultsSection({ summary, datasetId, onReset }: { summary: any, dataset
         <p className="text-gray-600">Your data has been processed and analyzed.</p>
       </div>
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-        <button onClick={onReset} className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-gray-200 rounded-xl font-semibold text-gray-700 hover:border-violet-300 hover:bg-violet-50 transition-all">Upload another file</button>
+        <button onClick={onReset} className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-gray-200 rounded-xl font-semibold text-gray-700 hover:border-violet-300 hover:bg-violet-50 transition-all">
+          <Upload size={18} />
+          Upload another file
+        </button>
         <div className="flex items-center gap-2">
           <button onClick={exportJson} className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-rose-600 text-white rounded-xl font-semibold shadow hover:shadow-md transition-all">
             Export JSON
