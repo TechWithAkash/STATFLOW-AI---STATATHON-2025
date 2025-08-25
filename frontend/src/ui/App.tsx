@@ -22,7 +22,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { Upload, CheckCircle, Clock, BarChart3, Shield, Database, Zap, AlertCircle, RefreshCw } from 'lucide-react'
-import { API_BASE, WS_BASE } from '../config'
+import { API_BASE, WS_BASE, USE_DEMO_MODE } from '../config'
 import { Metrics } from './Metrics'
 
 type ProgressMsg = {
@@ -34,6 +34,36 @@ type ProgressMsg = {
   summary?: any
 }
 
+// Mock data generator for demo mode
+const generateMockSummary = (filename: string) => ({
+  dataset_id: 'demo_' + Math.random().toString(36).substr(2, 9),
+  filename,
+  basic_stats: {
+    total_rows: Math.floor(Math.random() * 2000) + 500,
+    total_columns: Math.floor(Math.random() * 15) + 5,
+    missing_values: Math.floor(Math.random() * 100) + 10,
+    duplicate_rows: Math.floor(Math.random() * 50) + 5,
+    quality_score: Math.floor(Math.random() * 30) + 70
+  },
+  schema: Array.from({ length: Math.floor(Math.random() * 10) + 5 }, (_, i) => ({
+    name: ['Age', 'Gender', 'Income', 'Education', 'Satisfaction', 'Location', 'Experience', 'Feedback', 'Date', 'Category'][i] || `Column_${i}`,
+    type: ['numeric', 'categorical', 'text', 'datetime'][Math.floor(Math.random() * 4)],
+    missing_count: Math.floor(Math.random() * 50),
+    unique_values: Math.floor(Math.random() * 500) + 10
+  })),
+  outliers: Array.from({ length: Math.floor(Math.random() * 3) + 1 }, (_, i) => ({
+    column: ['Income', 'Age', 'Experience'][i] || `Column_${i}`,
+    count: Math.floor(Math.random() * 20) + 1,
+    description: 'Extreme values detected via statistical analysis'
+  })),
+  recommendations: [
+    'Consider reviewing outliers in numeric columns',
+    'Data quality is good overall with minimal missing values',
+    'Schema detection completed successfully',
+    'Ready for advanced analytics and modeling'
+  ]
+})
+
 export default function App() {
   const [datasetId, setDatasetId] = useState<string | null>(null)
   const [progress, setProgress] = useState<ProgressMsg>({})
@@ -43,9 +73,43 @@ export default function App() {
   const uploadAbortRef = useRef<AbortController | null>(null)
   const [uiStepIndex, setUiStepIndex] = useState(0)
 
-  // Open WebSocket when datasetId is set
+  // Open WebSocket when datasetId is set (or simulate in demo mode)
   useEffect(() => {
     if (!datasetId) return
+    
+    if (USE_DEMO_MODE) {
+      // Simulate processing in demo mode
+      const stages = ['upload', 'processing', 'done']
+      let currentStage = 0
+      
+      const simulateProgress = () => {
+        if (currentStage >= stages.length) return
+        
+        const stage = stages[currentStage]
+        setProgress({
+          stage,
+          rows: Math.floor(Math.random() * 1000) + 500,
+          bytes: Math.floor(Math.random() * 500000) + 100000,
+          percentage: ((currentStage + 1) / stages.length) * 100
+        })
+        
+        if (stage === 'done') {
+          // Use the filename from localStorage or default
+          const filename = localStorage.getItem('demo_filename') || 'sample_data.csv'
+          setSummary(generateMockSummary(filename))
+        } else {
+          setTimeout(() => {
+            currentStage++
+            simulateProgress()
+          }, 2000 + Math.random() * 1000)
+        }
+      }
+      
+      setTimeout(simulateProgress, 500)
+      return
+    }
+
+    // Real WebSocket logic for when backend is available
     // Cleanup any existing socket
     if (wsRef.current) {
       try { wsRef.current.close() } catch { /* noop */ }
@@ -120,6 +184,14 @@ export default function App() {
       return
     }
 
+    if (USE_DEMO_MODE) {
+      // Demo mode - simulate upload without backend
+      localStorage.setItem('demo_filename', file.name)
+      setDatasetId('demo_' + Math.random().toString(36).substr(2, 9))
+      return
+    }
+
+    // Real upload logic for when backend is available
     // Abort any in-flight upload
     try { uploadAbortRef.current?.abort() } catch { /* noop */ }
     const ac = new AbortController()
@@ -182,6 +254,12 @@ export default function App() {
             <h1 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-violet-600 to-rose-600 bg-clip-text text-transparent">StatFlow AI</h1>
           </div>
           <p className="text-gray-600">Upload a survey CSV to see schema detection, imputation, outliers, and a quality score.</p>
+          {USE_DEMO_MODE && (
+            <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-lg text-amber-800 text-sm">
+              <span className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
+              Demo Mode - Simulated AI processing for demonstration
+            </div>
+          )}
         </div>
 
         {!datasetId && (

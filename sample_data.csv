@@ -1,0 +1,21 @@
+id,name,age,income,education,location,satisfaction
+1,Amit Kumar,34,45000,Graduate,Delhi,4
+2,Priya Sharma,28,38000,Post Graduate,Mumbai,5
+3,Rajesh Singh,42,65000,Graduate,Bangalore,3
+4,Sneha Patel,31,52000,Post Graduate,Chennai,4
+5,Vikram Rao,25,28000,Undergraduate,Hyderabad,3
+6,Anita Joshi,38,48000,Graduate,Pune,5
+7,Suresh Kumar,45,78000,Post Graduate,Kolkata,4
+8,Kavya Menon,29,42000,Graduate,Kochi,4
+9,Rohit Gupta,35,55000,Graduate,Ahmedabad,3
+10,Deepika Reddy,32,47000,Post Graduate,Visakhapatnam,5
+11,Arjun Nair,27,35000,Graduate,Thiruvananthapuram,4
+12,Pooja Agarwal,33,50000,Post Graduate,Jaipur,4
+13,Manoj Tiwari,41,62000,Graduate,Lucknow,3
+14,Shweta Malhotra,26,31000,Undergraduate,Chandigarh,4
+15,Kiran Desai,39,58000,Post Graduate,Surat,5
+16,Ravi Iyer,30,44000,Graduate,Coimbatore,4
+17,Nisha Kapoor,36,53000,Graduate,Gurgaon,3
+18,Sanjay Yadav,43,69000,Post Graduate,Patna,4
+19,Meera Jain,24,26000,Undergraduate,Indore,3
+20,Arun Pillai,37,51000,Graduate,Trivandrum,5
