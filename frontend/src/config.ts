@@ -39,9 +39,12 @@ const hasValidBackend = fromEnv &&
 
 export const USE_DEMO_MODE = isProdHost && !hasValidBackend
 
-export const API_BASE = hasValidBackend 
-  ? fromEnv 
+// Normalize API_BASE by removing trailing slash to prevent double slashes in URLs
+const normalizedApiBase = hasValidBackend 
+  ? fromEnv!.replace(/\/+$/, '') // Remove trailing slashes
   : (isProdHost ? 'DEMO_MODE' : 'http://127.0.0.1:8000')
+
+export const API_BASE = normalizedApiBase
 
 export const WS_BASE = API_BASE === 'DEMO_MODE' 
   ? 'DEMO_MODE' 
