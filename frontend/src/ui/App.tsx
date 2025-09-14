@@ -18,6 +18,9 @@
 //     if (!datasetId) return
 //   const ws = new WebSocket(`${WS_BASE}/ws/progress/${datasetId}`)
 //     wsRef.current = ws
+
+
+// frontend/src/ui/App.tsx
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
